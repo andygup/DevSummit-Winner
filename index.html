@@ -80,7 +80,8 @@
     </style>
 
 </head>
-<body onload="reset();">
+<!--<body onload="reset();">-->
+<body>
 
 <div class="full-head" style="width:100%;background:#e5e5e5 center top">
     <div class="row">
@@ -130,6 +131,10 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
+                    <label>Meetup Location:</label>
+                    <input type="text" class="form-control" id="meetup-location">
+                </div>
+                <div class="form-group">
                     <label>Application ID:</label>
                     <div class="input-group">
                         <input type="text" readonly class="form-control" id="app-id">
@@ -149,14 +154,22 @@
     <script>
 
         // Globals - yeah I know ;-)
+
+        var LOCATION = "meetupLocation";   // meetup location
         var _APP_ID = "8EEcfgL5KvZiAN4h";   // AGOL app id
+        var _token = null;
+        var _oauth_info;
+        var names = [];
+        var _feature_service = "https://services1.arcgis.com/M8KJPUwAXP8jhtnM/ArcGIS/rest/services/GeoDevMeetups/FeatureServer/0";
 
         // Let's initialize everything
         (function init(){
             $('#myModal').modal({ show: false});
 
+            // Set appId value in modal form
             $('#myModal #app-id').val(_APP_ID);
 
+            // Sign into AGOL
             document.getElementById("sign-in").addEventListener("click", function(e){
                 require(["esri/IdentityManager"], function(esriId){
                     esriId.getCredential(_oauth_info.portalUrl + "/sharing")
@@ -168,6 +181,7 @@
 
             });
 
+            // Sign out of AGOL
             document.getElementById("sign-out").addEventListener("click", function(e){
                 require(["esri/IdentityManager"], function(esriId){
                     console.log("Signing out");
@@ -177,14 +191,22 @@
 
             });
 
-            logIntoPortal();
+            if(localStorage[LOCATION]){
+                $('#myModal #meetup-location').val(localStorage[LOCATION]);
+            }
+
+            logIntoPortal(function(result){
+                if(result){
+                    // Do something
+                }
+            });
         })();
 
         document.write('<script src=' +
             ('__proto__' in {} ? 'js/vendor/zepto' : 'js/vendor/jquery') +
             '.js><\/script>');
 
-        function logIntoPortal(){
+        function logIntoPortal(callback){
             require(["esri/arcgis/OAuthInfo", "esri/IdentityManager", "dojo/on"], function(OAuthInfo, esriId, on){
 
                 if(_APP_ID === undefined){
@@ -210,17 +232,60 @@
                         _token = result.token;
                         document.getElementById("sign-out").disabled = false;
                         document.getElementById("sign-in").disabled = true;
-
+                        callback(true);
                     }
                 ).otherwise(
                     function (){
                         document.getElementById("sign-out").disabled = true;
                         document.getElementById("sign-in").disabled = false;
                         console.warn("Log in required to get things going.");
+                        callback(false);
                     }
                 );
 
             });
+        }
+
+        function getNames(){
+
+            var whereClause = "location_name='" + localStorage[LOCATION] + "'";
+
+            var params = "f=json&token=" + _token + "&where=" + whereClause + "&outfields=first_name,last_name";
+            var req = new XMLHttpRequest();
+            req.open("POST", _feature_service + "/query", true);
+            req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            req.onload = function()
+            {
+                if( req.status === 200 && req.responseText !== "")
+                {
+                    try {
+                        // var b = this.responseText.replace(/"/g, "'"); // jshint ignore:line
+                        var obj = JSON.parse(this.responseText);
+                        console.log("Hah");
+
+                        for(var a = 0; a < obj.features.length; a++){
+                            names.push(obj.features[a].attributes.first_name + " " + obj.features[a].attributes.last_name + "\n");
+                        }
+
+                        $("#namesbox").text(names);
+                    }
+                    catch(err) {
+                        console.error("FAILED TO PARSE EDIT REQUEST RESPONSE:", err);
+                        alert("Unable to submit entry: " + err);
+                    }
+                }
+
+            };
+            req.onerror = function(e)
+            {
+                console.error("_makeEditRequest failed: " + e);
+                errback(e);
+            };
+            req.ontimeout = function() {
+                errback("xhr timeout error");
+            };
+            req.timeout = 30000;
+            req.send(params);
         }
 
     </script>
@@ -230,80 +295,6 @@
 
     <script>
         var text;
-        var names = new Array('Barbara McFell',
-            'Tempo McKeteketly',
-            'Maonga Irpaae',
-            'Jose Tunisia',
-            'Bob Bobson',
-            'Harold Greenoff',
-            'Jeff Penn',
-            'Ewan Freedom',
-            'Benjamin Turkin',
-            'Robert Harper',
-            'Sally Cladwell',
-            'Gregory Tomson',
-            'Benita Dano',
-            'Tameka Chea',
-            'Fernando Guntrum',
-            'Cody Devita',
-            'Margery Moloney',
-            'Jessie Wagar',
-            'Jessie Burkhard',
-            'Cody Lamotte',
-            'Tabatha Cantley',
-            'Hugh Fullwood',
-            'Emilia Janusz',
-            'Erik Taketa',
-            'Lenore Laughter',
-            'Kathrine Palazzo',
-            'Lonnie Garron',
-            'Tyrone Shott',
-            'Gay Duble',
-            'Pearlie Newberg',
-            'Clinton Rayl',
-            'Louisa Strey',
-            'Saundra Ingenito',
-            'Fernando Jenkin',
-            'Maricela Tonkin',
-            'Allie Borjas',
-            'Clinton Rickenbacker',
-            'Cody Golay',
-            'Jerri Tienda',
-            'Nita Pippen',
-            'Alejandra Bonhomme',
-            'Nelson Eguia',
-            'Rae Velasques',
-            'Boyce Edeker',
-            'Cedrick Culotti',
-            'Elenora Nagindas',
-            'Arletta Miran',
-            'Alica Knudsvig',
-            'Von Ostroot',
-            'Tomika Nuesca',
-            'Felton Pattinson',
-            'Cristopher Laper',
-            'Shonna Parrotta',
-            'Sarina Macurdy',
-            'Waylon Companie',
-            'Shon Carratura',
-            'Jae Kneser',
-            'Janett Papiernik',
-            'Lynwood Bellar',
-            'Jeramy Contopoulos',
-            'Hong Nederostek',
-            'Gigi Mccarn',
-            'Sid Mursko',
-            'Bielser',
-            'Jospeh Lustberg',
-            'Spring Luckinbill',
-            'Ciera Chionchio',
-            'Marleen Litchard',
-            'Eldridge Brynga',
-            'Leif Dinho',
-            'Gigi Kornblatt',
-            'Idell Chagollan',
-            'Michale Mcclod'
-        );
 
         function reset() {
             // re-enable go button
@@ -429,6 +420,8 @@
         }
 
         function namelist() {
+
+            getNames();
 
             $('#myModal').modal( 'show' );
 
