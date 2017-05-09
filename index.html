@@ -117,10 +117,112 @@
     </div>
 </div>
 
+
+<!-- Modal Panel -->
+<div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Configuration Info</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Application ID:</label>
+                    <div class="input-group">
+                        <input type="text" readonly class="form-control" id="app-id">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="sign-in" class="btn btn-success" type="button">Log In</button>
+                <button id="sign-out" type="submit" class="btn btn-danger">Sign-out</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
     <script>
+
+        // Globals - yeah I know ;-)
+        var _APP_ID = "8EEcfgL5KvZiAN4h";   // AGOL app id
+
+        // Let's initialize everything
+        (function init(){
+            $('#myModal').modal({ show: false});
+
+            $('#myModal #app-id').val(_APP_ID);
+
+            document.getElementById("sign-in").addEventListener("click", function(e){
+                require(["esri/IdentityManager"], function(esriId){
+                    esriId.getCredential(_oauth_info.portalUrl + "/sharing")
+                        .then(function(result){
+                                console.log("hah");
+                            }
+                        );
+                });
+
+            });
+
+            document.getElementById("sign-out").addEventListener("click", function(e){
+                require(["esri/IdentityManager"], function(esriId){
+                    console.log("Signing out");
+                    esriId.destroyCredentials();
+                    window.location.reload();
+                });
+
+            });
+
+            logIntoPortal();
+        })();
+
         document.write('<script src=' +
             ('__proto__' in {} ? 'js/vendor/zepto' : 'js/vendor/jquery') +
-            '.js><\/script>')
+            '.js><\/script>');
+
+        function logIntoPortal(){
+            require(["esri/arcgis/OAuthInfo", "esri/IdentityManager", "dojo/on"], function(OAuthInfo, esriId, on){
+
+                if(_APP_ID === undefined){
+                    console.error("Set the APP ID in the configuration window. ");
+                }
+                else {
+                    _oauth_info = new OAuthInfo({
+                        appId: _APP_ID,
+                        // Uncomment the next line and update if using your own portal
+                        //portalUrl: "https://<host>:<port>/arcgis"
+                        // Uncomment the next line to prevent the user's signed in state from being shared
+                        // with other apps on the same domain with the same authNamespace value.
+                        //authNamespace: "portal_oauth_inline",
+                        popup: false
+                    });
+                }
+
+                esriId.registerOAuthInfos([_oauth_info]);
+
+                esriId.checkSignInStatus(_oauth_info.portalUrl + "/sharing").then(
+                    function (result){
+                        console.log("We are already logged in. Good to go!");
+                        _token = result.token;
+                        document.getElementById("sign-out").disabled = false;
+                        document.getElementById("sign-in").disabled = true;
+
+                    }
+                ).otherwise(
+                    function (){
+                        document.getElementById("sign-out").disabled = true;
+                        document.getElementById("sign-in").disabled = false;
+                        console.warn("Log in required to get things going.");
+                    }
+                );
+
+            });
+        }
+
     </script>
 
     <script src="js/foundation.min.js"></script>
@@ -327,6 +429,9 @@
         }
 
         function namelist() {
+
+            $('#myModal').modal( 'show' );
+
             $("#varnote").hide();
             $('#namesbox').removeAttr('disabled', 'disabled');
             $('#headline').text('Configure name list');
