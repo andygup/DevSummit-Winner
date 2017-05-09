@@ -86,7 +86,7 @@
 <div class="full-head" style="width:100%;background:#e5e5e5 center top">
     <div class="row">
         <div class="large-12 columns" style="padding-top:50px;background:#e5e5e5 repeat-x center top;z-index:20;">
-            <ul class="button-group even-4">
+            <ul class="button-group even-5">
                 <li><a href="index.html" class="alert button" id="reset">Reset</a></li>
                 <li>
                     <button class="button" id="list" onclick="namelist();">Name List</button>
@@ -96,6 +96,9 @@
                 </li>
                 <li>
                     <button class="success button" id="go" onclick="go();">GO!</button>
+                </li>
+                <li>
+                    <button class="alert button" id="sign-out-2" onclick="signOut();" >Sign-out</button>
                 </li>
             </ul>
         </div>
@@ -183,12 +186,7 @@
 
             // Sign out of AGOL
             document.getElementById("sign-out").addEventListener("click", function(e){
-                require(["esri/IdentityManager"], function(esriId){
-                    console.log("Signing out");
-                    esriId.destroyCredentials();
-                    window.location.reload();
-                });
-
+                signOut();
             });
 
             if(localStorage[LOCATION]){
@@ -205,6 +203,14 @@
         document.write('<script src=' +
             ('__proto__' in {} ? 'js/vendor/zepto' : 'js/vendor/jquery') +
             '.js><\/script>');
+
+        function signOut(){
+            require(["esri/IdentityManager"], function(esriId){
+                console.log("Signing out");
+                esriId.destroyCredentials();
+                window.location.reload();
+            });
+        }
 
         function logIntoPortal(callback){
             require(["esri/arcgis/OAuthInfo", "esri/IdentityManager", "dojo/on"], function(OAuthInfo, esriId, on){
