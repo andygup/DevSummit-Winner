@@ -196,8 +196,8 @@
             }
 
             logIntoPortal(function(result){
-                if(result){
-                    // Do something
+                if(!result){
+                    $('#myModal').modal( 'show' );
                 }
             });
         })();
@@ -422,8 +422,6 @@
         function namelist() {
 
             getNames();
-
-            $('#myModal').modal( 'show' );
 
             $("#varnote").hide();
             $('#namesbox').removeAttr('disabled', 'disabled');
