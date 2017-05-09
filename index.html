@@ -267,13 +267,17 @@
                     try {
                         // var b = this.responseText.replace(/"/g, "'"); // jshint ignore:line
                         var obj = JSON.parse(this.responseText);
-                        console.log("Hah");
 
-                        for(var a = 0; a < obj.features.length; a++){
-                            names.push(obj.features[a].attributes.first_name + " " + obj.features[a].attributes.last_name + "\n");
+                        if(obj.hasOwnProperty("error")){
+                            alert("Unable to make request: " + JSON.stringify(obj.error));
                         }
+                        else {
+                            for(var a = 0; a < obj.features.length; a++){
+                                names.push(obj.features[a].attributes.first_name + " " + obj.features[a].attributes.last_name + "\n");
+                            }
 
-                        $("#namesbox").text(names);
+                            $("#namesbox").text(names);
+                        }
                     }
                     catch(err) {
                         console.error("FAILED TO PARSE EDIT REQUEST RESPONSE:", err);
