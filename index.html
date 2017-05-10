@@ -208,6 +208,7 @@
             require(["esri/IdentityManager"], function(esriId){
                 console.log("Signing out");
                 esriId.destroyCredentials();
+                localStorage[LOCATION] = "";
                 window.location.reload();
             });
         }
