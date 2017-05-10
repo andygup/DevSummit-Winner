@@ -135,7 +135,12 @@
             <div class="modal-body">
                 <div class="form-group">
                     <label>Meetup Location:</label>
-                    <input type="text" class="form-control" id="meetup-location">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="meetup-location">
+                        <span class="input-group-btn">
+                            <button id="save-location-btn" class="btn btn-success" type="button">Save</button>
+                        </span>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>Application ID:</label>
@@ -186,6 +191,18 @@
             // Sign out of AGOL
             document.getElementById("sign-out").addEventListener("click", function(e){
                 signOut();
+            });
+
+            document.getElementById("save-location-btn").addEventListener("click", function(e){
+                var location = $("#meetup-location").val().trim();
+
+                if(location == ""){
+                    alert("Location is blank. Please enter a new location and the old location will be overwritten. ");
+                }
+                else {
+                    localStorage[LOCATION] = location;
+                    alert("The new value: " + location + " has been saved.");
+                }
             });
 
             if(localStorage[LOCATION]){
