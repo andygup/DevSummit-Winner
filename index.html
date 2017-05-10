@@ -162,7 +162,6 @@
         var _APP_ID = "8EEcfgL5KvZiAN4h";   // AGOL app id
         var _token = null;
         var _oauth_info;
-        var names = [];
         var _feature_service = "https://services1.arcgis.com/M8KJPUwAXP8jhtnM/ArcGIS/rest/services/GeoDevMeetups/FeatureServer/0";
 
         // Let's initialize everything
@@ -265,6 +264,8 @@
             {
                 if( req.status === 200 && req.responseText !== "")
                 {
+                    var names = "";
+
                     try {
                         // var b = this.responseText.replace(/"/g, "'"); // jshint ignore:line
                         var obj = JSON.parse(this.responseText);
@@ -274,7 +275,7 @@
                         }
                         else {
                             for(var a = 0; a < obj.features.length; a++){
-                                names.push(obj.features[a].attributes.first_name + " " + obj.features[a].attributes.last_name + "\n");
+                                names += obj.features[a].attributes.first_name + " " + obj.features[a].attributes.last_name + "\n";
                             }
 
                             $("#namesbox").text(names);
