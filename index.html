@@ -256,7 +256,7 @@
 
             var whereClause = "location_name='" + localStorage[LOCATION] + "'";
 
-            var params = "f=json&token=" + _token + "&where=" + whereClause + "&outfields=first_name,last_name";
+            var params = "f=json&token=" + _token + "&where=" + whereClause + "&outFields=first_name,last_name" + "&returnGeometry=false";
             var req = new XMLHttpRequest();
             req.open("POST", _feature_service + "/query", true);
             req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
