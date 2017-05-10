@@ -289,11 +289,10 @@
             };
             req.onerror = function(e)
             {
-                console.error("_makeEditRequest failed: " + e);
-                errback(e);
+                console.error("xhr failed: " + e);
             };
             req.ontimeout = function() {
-                errback("xhr timeout error");
+                console.error("xhr timeout error");
             };
             req.timeout = 30000;
             req.send(params);
