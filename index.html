@@ -80,16 +80,15 @@
     </style>
 
 </head>
-<!--<body onload="reset();">-->
+
 <body>
 
 <div class="full-head" style="width:100%;background:#e5e5e5 center top">
     <div class="row">
         <div class="large-12 columns" style="padding-top:50px;background:#e5e5e5 repeat-x center top;z-index:20;">
-            <ul class="button-group even-5">
-                <li><a href="index.html" class="alert button" id="reset">Reset</a></li>
+            <ul class="button-group even-4">
                 <li>
-                    <button class="button" id="list" onclick="namelist();">Name List</button>
+                    <button class="button" id="list" onclick="namelist();">Get Name List</button>
                 </li>
                 <li>
                     <button class="button" id="save" onclick="save();">Save &amp; Update</button>
@@ -216,6 +215,7 @@
             });
         })();
 
+        // [Comment by AG: not really sure what this does?]
         document.write('<script src=' +
             ('__proto__' in {} ? 'js/vendor/zepto' : 'js/vendor/jquery') +
             '.js><\/script>');
@@ -224,7 +224,10 @@
             require(["esri/IdentityManager"], function(esriId){
                 console.log("Signing out");
                 esriId.destroyCredentials();
+
+                // Delete the old meetup location
                 localStorage[LOCATION] = "";
+
                 window.location.reload();
             });
         }
